@@ -1,0 +1,45 @@
+#coding='utf-8'
+train:
+  save_dir: './checkpoint/' # 存放训练得到的模型
+  result_dir: './result/' #
+  model_name: 'CNN_seg_tif' # 模型名称
+  random_seed: 180903 # 随机种子，作用是使得算法的训练可复现
+  # 预训练模型参数地址，当训练结束后，会获得模型参数CNN_seg_best.ckpt
+  # 记载预训练模型用于：1 继续训练；2 用于使用该模型参数进行测试，即eval.py
+  pretrained_dir: './checkpoint/CNN_seg_tif/CNN_seg_tif_best.ckpt'
+  pretrained: True # 是否使用预训练模型的bool值开关
+
+  lr: 0.001 # 初始学习率
+  optimizer: 'Adam' # 梯度优化器，可选 Adam 或者 SGD
+  momentum: 0.999 # 优化器动量大小
+  weight_decay: 0.000001 # 正则化系数
+  epoch: 300 # 训练epoch数
+
+  # 学习率调整策略，可选指定间隔调整MultiStepLR或者余弦下降策略CosineAnnealingLR
+  # MultiStepLR  CosineAnnealingLR
+  scheduler: 'CosineAnnealingLR'
+  steps: [100, 200, 300] # MultiStepLR策略的调整点
+  gamma: 0.1 #
+  eta_min: 0.0000001 # 学习率能够下降到的最低值
+
+  num_workers: 0 # 线程数
+  batch_size: 68 #
+  loss_func: 'CrossEntropyLoss' # 损失函数，
+  crop_size: [768, 768]
+  resize: [512, 512] # 图像resize大小
+
+test:
+  test_mode: 1 # 0-无标签测试，只需输入图像，1-有标签测试，需要输入图像与标签
+
+data: # 有关数据集根目录、数据集列表
+  train_root: '../datasets/TrainTest_2020/images/'
+  train_label_root: '../datasets/TrainTest_2020/labels/'
+  train_list: '../datasets/TrainTest_2020/img_label_list.txt'
+  test_root: '../datasets/TrainTest_2020/images/'
+  test_label_root: '../datasets/TrainTest_2020/labels/'
+  test_list: '../datasets/TrainTest_2020/img_label_list.txt'
+
+net:
+  type: 'ResNet18' # 网络主干选择
+  dropout: 0.5 # FC层的dropout系数
+  num_class: 2 # 网络输出类别数，由于是二值分割，所以是2类
